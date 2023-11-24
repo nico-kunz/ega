@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "v-network-graph": "^0.9.13",
     "vue": "^3.3.4"
   },
   "devDependencies": {
