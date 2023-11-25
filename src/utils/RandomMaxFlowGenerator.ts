@@ -15,3 +15,20 @@ export function makeRandomMaxFlowGraph(numberOfNodes: number, maxCapacity: numbe
     
 }
 
+/**
+ * Get `n` random coordinates in a square of size `squareSize`.
+ * @param n Number of coordinates to generate.
+ * @param squareSize Size of the square, limits the max value of the coordinates.
+ * @returns Array of n coordinates in the square.
+ */
+function getRandomCoordinates(n: number, squareSize: Size) : Coordinate[] {
+    const coordinates: Coordinate[] = [];
+    for (let i = 0; i < n; i++) {
+        coordinates.push({
+            x: Math.random() * squareSize.width,
+            y: Math.random() * squareSize.height
+        })
+    }
+
+    return coordinates;
+}
