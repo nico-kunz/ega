@@ -21,14 +21,31 @@ export function makeRandomMaxFlowGraph(numberOfNodes: number, maxCapacity: numbe
  * @param squareSize Size of the square, limits the max value of the coordinates.
  * @returns Array of n coordinates in the square.
  */
-function getRandomCoordinates(n: number, squareSize: Size) : Coordinate[] {
+export function getRandomCoordinatesWihoutIntersection(n: number, squareSize: Size, radius = 16) : Coordinate[] {
     const coordinates: Coordinate[] = [];
-    for (let i = 0; i < n; i++) {
-        coordinates.push({
-            x: Math.random() * squareSize.width,
-            y: Math.random() * squareSize.height
-        })
+    const maxAttempts = 1000;
+    let attempts = 0;
+
+    const distance = (c1: Coordinate, c2: Coordinate) => Math.sqrt(Math.pow(c1.x - c2.x, 2) + Math.pow(c1.y - c2.y, 2));
+
+    while (coordinates.length < n && attempts < maxAttempts) {
+        const coordinate = getRandomCoordinate(squareSize);
+        if (coordinates.every(c => distance(c, coordinate) > radius * 2)) {
+            coordinates.push(coordinate);
+        }
+        attempts++;
+    }
+
+    if (attempts === maxAttempts) {
+        console.error("Could not generate random coordinates without intersection.");
     }
 
     return coordinates;
+}
+
+function getRandomCoordinate(squareSize: Size) : Coordinate {
+    return {
+        x: Math.random() * squareSize.width,
+        y: Math.random() * squareSize.height
+    }
 }
