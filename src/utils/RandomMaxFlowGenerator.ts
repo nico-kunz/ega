@@ -66,8 +66,13 @@ export function getRandomNodes(n: number, squareSize: Size, radius = 16) : Coord
  * @returns Random coordinate in the square.
  */
 function getRandomCoordinate(squareSize: Size, radius: number) : Coordinate {
-    return {
-        x: Math.floor(Math.random() * (squareSize.width - radius+1)) + radius,
-        y: Math.floor(Math.random() * (squareSize.height - radius+1)) + radius
-    }
+    // get random coordinates, center of square is 0,0
+    const x = getRandomArbitrary(-squareSize.width/2 + radius, squareSize.width/2 - radius);
+    const y = getRandomArbitrary(-squareSize.height/2 + radius, squareSize.height/2 - radius);
+    return {x: x, y: y};
+}
+
+
+function getRandomArbitrary(min: number, max: number) {
+    return Math.random() * (max - min) + min;
 }
