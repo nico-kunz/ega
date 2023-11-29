@@ -24,6 +24,13 @@ function intersectsLine(a: EdgePos, b: EdgePos): boolean {
 
     return ccw(p1,p3,p4) !== ccw(p2,p3,p4) && ccw(p1,p2,p3) !== ccw(p1,p2,p4);
 }
+
+function getEdgePositions(layout: Layouts, edge: Edge): {x1: number, y1: number, x2: number, y2: number} {
+    const source = layout.nodes[edge.source];
+    const target = layout.nodes[edge.target];
+    return {x1: source.x, y1: source.y, x2: target.x, y2: target.y};
+}
+
 /**
  * Calculate the euclidean distance between two coordinates.
  * @param c1 
