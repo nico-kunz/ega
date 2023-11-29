@@ -11,9 +11,24 @@ interface Coordinate {
 /**
  * Generates a random max-flow problem graph with maximal planarity and strong connectivity.
  */
-/*export function makeRandomMaxFlowGraph(numberOfNodes: number, maxCapacity: number, squareSize?: Size, radius = 16) {
-    
-}*/
+/**
+ * Get all node pairs from a list of nodes, without repetition.
+ * @param nodes List of nodeids.
+ * @returns List of (n choose k) node pairs.
+ */
+function getNodePairs(nodes: string[]) {
+    const pairs: [string, string][] = [];
+
+    for (let i = 0; i < nodes.length; i++) {
+        for(let j = i+1; j < nodes.length; j++) {
+            pairs.push([nodes[i], nodes[j]]);
+        }
+    }
+
+    // should result in n choose k pairs (choose k items from n without repetition and without order)
+    console.log(pairs);
+    return pairs;
+}
 
 /**
  * Get `n` random coordinates in a square of size `squareSize`.
