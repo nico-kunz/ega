@@ -13,6 +13,17 @@ interface Coordinate {
 /**
  * Generates a random max-flow problem graph with maximal planarity and strong connectivity.
  */
+function intersectsLine(a: EdgePos, b: EdgePos): boolean {
+    const p1 = {x: a.x1, y: a.y1};
+    const p2 = {x: a.x2, y: a.y2};
+    const p3 = {x: b.x1, y: b.y1};
+    const p4 = {x: b.x2, y: b.y2};
+    const ccw = (p1: Coordinate, p2: Coordinate, p3: Coordinate) => {
+        return (p3.y - p1.y) * (p2.x - p1.x) > (p2.y - p1.y) * (p3.x - p1.x);
+    }
+
+    return ccw(p1,p3,p4) !== ccw(p2,p3,p4) && ccw(p1,p2,p3) !== ccw(p1,p2,p4);
+}
 /**
  * Calculate the euclidean distance between two coordinates.
  * @param c1 
