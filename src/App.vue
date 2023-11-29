@@ -3,6 +3,29 @@ import { Edges, Layouts, Nodes, defineConfigs } from 'v-network-graph';
 import { VNetworkGraph, VEdgeLabel } from 'v-network-graph';
 import { reactive } from 'vue';
 import { makeRandomMaxFlowGraph } from './utils/RandomMaxFlowGenerator';
+  
+  const configs = reactive(
+    defineConfigs({
+      view: {
+        scalingObjects: true,
+        autoPanAndZoomOnLoad: "center-zero"
+      },
+      node: {
+        label: {
+          color: "#FFF",
+          direction: "center",
+          text: (node) => {
+            if(node.name === "1")
+              return "S";
+            if(node.name === n.toString())
+              return "D";
+
+            return node.name as string;
+          }
+        }
+      }
+    })
+  )
 
   const nodes : Nodes = reactive({
     
@@ -14,6 +37,7 @@ import { makeRandomMaxFlowGraph } from './utils/RandomMaxFlowGenerator';
     },
   })
 
+  
   const n = 20;
   const graph = makeRandomMaxFlowGraph(n, 20, {width: 800, height: 600});
   const layoutNodes = graph.layout.nodes;
@@ -43,7 +67,7 @@ import { makeRandomMaxFlowGraph } from './utils/RandomMaxFlowGenerator';
     :configs="configs"
   >
     <template #edge-label="{ edge, ...slotProps }">
-      <v-edge-label :text="edge.label" align="center" vertical-align="above" v-bind="slotProps" />
+      <v-edge-label :text="edge.label" align="center" vertical-align="center" v-bind="slotProps" />
     </template>
   </v-network-graph>
   <button @click="layout.nodes.node1.y -= 10">Move node 1</button>
