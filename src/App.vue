@@ -2,7 +2,7 @@
 import { Edges, Layouts, Nodes, defineConfigs } from 'v-network-graph';
 import { VNetworkGraph, VEdgeLabel } from 'v-network-graph';
 import { reactive } from 'vue';
-import { getRandomNodes } from './utils/RandomMaxFlowGenerator';
+import { makeRandomMaxFlowGraph } from './utils/RandomMaxFlowGenerator';
 
   const nodes : Nodes = reactive({
     
@@ -14,31 +14,22 @@ import { getRandomNodes } from './utils/RandomMaxFlowGenerator';
     },
   })
 
-  const configs = reactive(
-    defineConfigs({
-      view: {
-        scalingObjects: true,
-      },
-  })
-)
-  const n = 100;
-  const coords = getRandomNodes(n, { width: 800, height: 600 })
-  for (let i = 0; i < coords.length; i++) {
-    const newNode = `node${i + 1}`;
-    nodes[newNode] = { name: newNode };
-    layout.nodes[newNode] = { x: coords[i].x, y: coords[i].y };
+  const n = 20;
+  const graph = makeRandomMaxFlowGraph(n, 20, {width: 800, height: 600});
+  const layoutNodes = graph.layout.nodes;
+  for (const node in layoutNodes) {
+    nodes[node] = { name: node };
+    layout.nodes[node] = { x: layoutNodes[node].x, y: layoutNodes[node].y };
   }
-  
 
   const edges : Edges = reactive({
-
+    ...graph.edges
   })
 
-
   function addNode() {
-    const newNode = `node${Object.keys(nodes).length + 1}`;
+    const newNode = `${Object.keys(nodes).length + 1}`;
     nodes[newNode] = { name: newNode };
-    layout.nodes[newNode] = { x: 32, y: 40 };
+    layout.nodes[newNode] = { x: -34.55937750784574, y: -10.346841686848222 };
     //edges[`edge${Object.keys(edges).length + 1}`] = { source: "node1", target: newNode };
   }
 </script>
