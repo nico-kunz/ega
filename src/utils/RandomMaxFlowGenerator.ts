@@ -1,4 +1,4 @@
-import { Layouts, Nodes } from "v-network-graph";
+import { Edge, Edges, Layouts, Nodes } from "v-network-graph";
 
 interface Size {
     width: number;
@@ -10,9 +10,29 @@ interface Coordinate {
     y: number;
 }
 
+type EdgePos = {x1: number, y1: number, x2: number, y2: number};
+
 /**
  * Generates a random max-flow problem graph with maximal planarity and strong connectivity.
  */
+export function makeRandomMaxFlowGraph(numberOfNodes: number, maxCapacity: number, squareSize: Size, radius = 16) {
+    const nodes: Nodes = {};
+    const layout: Layouts = { nodes: {} };
+    const coords = getRandomNodes(numberOfNodes, squareSize, radius);
+    for (let i = 0; i < coords.length; i++) {
+        const newNode = `${i + 1}`;
+        nodes[newNode] = { name: newNode };
+        layout.nodes[newNode] = { x: coords[i].x, y: coords[i].y };
+    }
+
+    const edges = makeEdges(layout, maxCapacity)
+
+    return {
+        nodes: nodes,
+        layout: layout,
+        edges: edges
+    }
+}
 
 function makeEdges(layout: Layouts, maxCapacity: number) {
     // get dictionary for all node pairs and their distance
