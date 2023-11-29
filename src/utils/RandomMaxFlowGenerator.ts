@@ -13,6 +13,48 @@ interface Coordinate {
 /**
  * Generates a random max-flow problem graph with maximal planarity and strong connectivity.
  */
+
+function makeEdges(layout: Layouts, maxCapacity: number) {
+    // get dictionary for all node pairs and their distance
+    const distances = getDistancesSorted(layout);
+    const edges: Edges = {};
+
+
+    // add edge from start node to random node 
+    const startNode = Object.keys(layout.nodes)[0];
+    const endNode = Object.keys(layout.nodes)[1];
+    edges[`${startNode}-${endNode}`] = { source: startNode, target: endNode, label: Math.floor(Math.random() * maxCapacity) + 1 };
+
+    // add edge from end node to random node
+    const endNode2 = Object.keys(layout.nodes)[2];
+    edges[`${endNode}-${endNode2}`] = { source: endNode, target: endNode2, label: Math.floor(Math.random() * maxCapacity) + 1 };
+    
+
+
+    // connect closest nodes
+    for (const elem of distances) {
+        const [n1, n2] = elem[0].split(",");
+        // check if edge would intersect
+        const edge = { source: n1, target: n2 };
+        const edgePositions = getEdgePositions(layout, edge);
+        
+        // check if edge intersects with any other edge
+        const intersects = Object.values(edges).some(e => {
+            const ePos = getEdgePositions(layout, e);
+            return intersectsLine(ePos, edgePositions);
+        });
+        
+        if (intersects)
+            continue;
+
+
+        edges[`${n1}-${n2}`] = { source: n1, target: n2, label: Math.floor(Math.random() * maxCapacity) + 1 };
+    }
+
+
+    return edges;
+}
+
 function intersectsLine(a: EdgePos, b: EdgePos): boolean {
     const p1 = {x: a.x1, y: a.y1};
     const p2 = {x: a.x2, y: a.y2};
