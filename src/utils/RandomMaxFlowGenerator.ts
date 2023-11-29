@@ -12,6 +12,28 @@ interface Coordinate {
  * Generates a random max-flow problem graph with maximal planarity and strong connectivity.
  */
 /**
+ * Get all possible node pairs (without duplicates) sorted by their distance.
+ * @param layout Layout containing nodes and their coordinates.
+ * @returns Sorted Array of node pairs ("x,y") and their distance
+ */
+function getDistancesSorted(layout: Layouts) {
+    // make all node pairs
+    const nodePairs = getNodePairs(Object.keys(layout.nodes));
+    
+    // get distance for each node pair
+    const distances: Record<string, number> = {};
+    for (const pair of nodePairs) {
+        distances[pair.join(",")] = distance(layout.nodes[pair[0]], layout.nodes[pair[1]]);
+    }
+
+    // sort by distance
+    const sorted = Object.entries(distances).sort((a, b) => a[1] - b[1]);
+
+    console.log("Node pairs sorted by distance:", sorted);
+    return sorted;
+}
+
+/**
  * Get all node pairs from a list of nodes, without repetition.
  * @param nodes List of nodeids.
  * @returns List of (n choose k) node pairs.
