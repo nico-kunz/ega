@@ -1,3 +1,5 @@
+import { Layouts, Nodes } from "v-network-graph";
+
 interface Size {
     width: number;
     height: number;
@@ -11,6 +13,16 @@ interface Coordinate {
 /**
  * Generates a random max-flow problem graph with maximal planarity and strong connectivity.
  */
+/**
+ * Calculate the euclidean distance between two coordinates.
+ * @param c1 
+ * @param c2 
+ * @returns The euclidean distance between the two coordinates.
+ */
+function distance(c1: Coordinate, c2: Coordinate) {
+    return Math.sqrt(Math.pow(c1.x - c2.x, 2) + Math.pow(c1.y - c2.y, 2));
+}
+
 /**
  * Get all possible node pairs (without duplicates) sorted by their distance.
  * @param layout Layout containing nodes and their coordinates.
