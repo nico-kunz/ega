@@ -51,9 +51,13 @@ function makeEdges(layout: Layouts, maxCapacity: number) {
         // check if edge intersects with any other edge
         const intersects = Object.values(edges).some(e => {
             const ePos = getEdgePositions(layout, e);
-            return intersectsLine(ePos, edgePositions);
+            console.log(edge, e)
+            const test = intersectsLine(edgePositions, ePos);
+            console.log("intersects", test)
+            return test
         });
         
+            
         if (intersects)
             continue;
 
@@ -65,7 +69,17 @@ function makeEdges(layout: Layouts, maxCapacity: number) {
     return edges;
 }
 
+function edgesEqual(e1: EdgePositions, e2: EdgePositions) {
+    // check both ways
+    console.log(e1, e2)
+    console.log(e1.x1 == e2.x2 && e1.y1 == e2.y2 && e1.x2 == e2.x1 && e1.y2 == e2.y1)
+    return (e1.x1 == e2.x1 && e1.y1 == e2.y1 && e1.x2 == e2.x2 && e1.y2 == e2.y2);
+}
+
 function intersectsLine(a: EdgePositions, b: EdgePositions): boolean {
+    // check if they are the same edge
+    if (edgesEqual(a,b)) return false;
+
     const p1 = {x: a.x1, y: a.y1};
     const p2 = {x: a.x2, y: a.y2};
     const p3 = {x: b.x1, y: b.y1};
