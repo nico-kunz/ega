@@ -1,21 +1,11 @@
 import { Edge, Edges, Layouts, Nodes } from "v-network-graph";
+import { Coordinate, RectangleSize, EdgePositions } from "./types";
 
-interface Size {
-    width: number;
-    height: number;
-}
-
-interface Coordinate {
-    x: number;
-    y: number;
-}
-
-type EdgePos = {x1: number, y1: number, x2: number, y2: number};
 
 /**
  * Generates a random max-flow problem graph with maximal planarity and strong connectivity.
  */
-export function makeRandomMaxFlowGraph(numberOfNodes: number, maxCapacity: number, squareSize: Size, radius = 16) {
+export function makeRandomMaxFlowGraph(numberOfNodes: number, maxCapacity: number, squareSize: RectangleSize, radius = 16) {
     const nodes: Nodes = {};
     const layout: Layouts = { nodes: {} };
     const coords = getRandomNodes(numberOfNodes, squareSize, radius);
@@ -75,7 +65,7 @@ function makeEdges(layout: Layouts, maxCapacity: number) {
     return edges;
 }
 
-function intersectsLine(a: EdgePos, b: EdgePos): boolean {
+function intersectsLine(a: EdgePositions, b: EdgePositions): boolean {
     const p1 = {x: a.x1, y: a.y1};
     const p2 = {x: a.x2, y: a.y2};
     const p3 = {x: b.x1, y: b.y1};
@@ -128,7 +118,7 @@ function getDistancesSorted(layout: Layouts) {
 /**
  * Get all node pairs from a list of nodes, without repetition.
  * @param nodes List of nodeids.
- * @returns List of (n choose k) node pairs.
+ * @returns List of node pairs.
  */
 function getNodePairs(nodes: string[]) {
     const pairs: [string, string][] = [];
@@ -151,7 +141,7 @@ function getNodePairs(nodes: string[]) {
  * @param radius Radius of a node to be considered.
  * @returns Array of n node coordinates in the square.
  */
-export function getRandomNodes(n: number, squareSize: Size, radius = 16) : Coordinate[] {
+export function getRandomNodes(n: number, squareSize: RectangleSize, radius = 16) : Coordinate[] {
     const coordinates: Coordinate[] = [];
     const maxAttempts = 1000;
     let attempts = 0;
@@ -179,7 +169,7 @@ export function getRandomNodes(n: number, squareSize: Size, radius = 16) : Coord
  * @param radius Radius of a node to be considered.
  * @returns Random coordinate in the square.
  */
-function getRandomCoordinate(squareSize: Size, radius: number) : Coordinate {
+function getRandomCoordinate(squareSize: RectangleSize, radius: number) : Coordinate {
     // get random coordinates, center of square is 0,0
     const x = getRandomArbitrary(-squareSize.width/2 + radius, squareSize.width/2 - radius);
     const y = getRandomArbitrary(-squareSize.height/2 + radius, squareSize.height/2 - radius);
