@@ -23,7 +23,6 @@ export function getEdgePositions(layout: Layouts, edge: Edge): {x1: number, y1: 
     return {x1: source.x, y1: source.y, x2: target.x, y2: target.y};
 }
 
-
 /**
  * Get random coordinate in a square of size `squareSize` considering 'radius' of the node.
  * @param squareSize Size of the square, limits the max value of the coordinates.
@@ -36,7 +35,6 @@ export function getRandomCoordinate(squareSize: RectangleSize, radius: number) :
     const y = getRandomArbitrary(-squareSize.height/2 + radius, squareSize.height/2 - radius);
     return {x: x, y: y};
 }
-
 
 /**
  * Get random value between min and max.
@@ -67,7 +65,6 @@ export function getNodePairs(nodes: string[]) {
     console.log(pairs);
     return pairs;
 }
-
 
 /**
  * Checks if two edges intersect.

@@ -53,6 +53,7 @@ function makeEdges(layout: Layouts, maxCapacity: number) {
             const ePos = getEdgePositions(layout, e);
             console.log(edge, e)
             const test = intersectsLine(edgePositions, ePos);
+
             console.log("intersects", test)
             return test
         });
@@ -99,18 +100,24 @@ function getDistancesSorted(layout: Layouts) {
  */
 export function getRandomNodes(n: number, squareSize: RectangleSize, radius = 16) : Coordinate[] {
     const coordinates: Coordinate[] = [];
+
+    // number of attempts to generate a coordinate without intersecting another node
     const maxAttempts = 1000;
     let attempts = 0;
 
-    const distance = (c1: Coordinate, c2: Coordinate) => Math.sqrt(Math.pow(c1.x - c2.x, 2) + Math.pow(c1.y - c2.y, 2));
+    // first coordinate should be to the left of the center
+    coordinates.push({x: -squareSize.width/2 + radius*3, y: 0})
 
-    while (coordinates.length < n && attempts < maxAttempts) {
+    while (coordinates.length < n - 1 && attempts < maxAttempts) {
         const coordinate = getRandomCoordinate(squareSize, radius*3);
         if (coordinates.every(c => distance(c, coordinate) > radius * 3)) {
             coordinates.push(coordinate);
         }
         attempts++;
     }
+    
+    // last coordinate should be to the right of the center
+    coordinates.push({x: squareSize.width/2 - radius*3, y: 0})
 
     if (attempts === maxAttempts) {
         console.error("Could not generate random coordinates without intersection.");
