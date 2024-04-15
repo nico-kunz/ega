@@ -38,7 +38,7 @@ import { makeRandomMaxFlowGraph } from './utils/RandomMaxFlowGenerator';
   })
 
   
-  const n = 20;
+  const n = 10;
   const graph = makeRandomMaxFlowGraph(n, 20, {width: 800, height: 600});
   const layoutNodes = graph.layout.nodes;
   for (const node in layoutNodes) {
@@ -54,7 +54,7 @@ import { makeRandomMaxFlowGraph } from './utils/RandomMaxFlowGenerator';
     const newNode = `${Object.keys(nodes).length + 1}`;
     nodes[newNode] = { name: newNode };
     layout.nodes[newNode] = { x: -34.55937750784574, y: -10.346841686848222 };
-    //edges[`edge${Object.keys(edges).length + 1}`] = { source: "node1", target: newNode };
+    edges[`edge${Object.keys(edges).length + 1}`] = { source: "1", target: newNode };
   }
 </script>
 
