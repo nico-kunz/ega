@@ -40,10 +40,9 @@ function makeEdges(layout: Layouts, maxCapacity: number) {
             const ePos = getEdgePositions(layout, e);
             console.log(edge, e)
             
-            // check if they both go to the same node
+            // check if they both connect the same node
             if(e.source == edge.source || e.source == edge.target || e.target == edge.source || e.target == edge.target) return false;
 
-            //const test = intersectsLine(edgePositions, ePos);
             return intersectsLine(ePos, edgePositions);
         });
 

@@ -90,14 +90,3 @@ export function intersectsLine(line1: EdgePositions, line2: EdgePositions) : boo
 
     return true
 }
-
-/**
- * Checks if two edges are equal.
- * @param e1 The first edge.
- * @param e2 The second edge.
- * @returns True if the edges are equal, false otherwise.
- */
-function edgesEqual(e1: EdgePositions, e2: EdgePositions) {
-    // check both ways
-    return (e1.x1 == e2.x1 && e1.y1 == e2.y1 && e1.x2 == e2.x2 && e1.y2 == e2.y2);
-}
