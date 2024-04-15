@@ -15,7 +15,7 @@ export function makeRandomMaxFlowGraph(numberOfNodes: number, maxCapacity: numbe
         layout.nodes[newNode] = { x: coords[i].x, y: coords[i].y };
     }
 
-    const edges = makeEdges(layout, maxCapacity)
+    const edges = makeEdges(layout, maxCapacity);
 
     return {
         nodes: nodes,
@@ -25,42 +25,30 @@ export function makeRandomMaxFlowGraph(numberOfNodes: number, maxCapacity: numbe
 }
 
 function makeEdges(layout: Layouts, maxCapacity: number) {
-    // get dictionary for all node pairs and their distance
     const distances = getDistancesSorted(layout);
     const edges: Edges = {};
 
 
-    // add edge from start node to random node 
-    const startNode = Object.keys(layout.nodes)[0];
-    const endNode = Object.keys(layout.nodes)[1];
-    edges[`${startNode}-${endNode}`] = { source: startNode, target: endNode, label: Math.floor(Math.random() * maxCapacity) + 1 };
-
-    // add edge from end node to random node
-    const endNode2 = Object.keys(layout.nodes)[2];
-    edges[`${endNode}-${endNode2}`] = { source: endNode, target: endNode2, label: Math.floor(Math.random() * maxCapacity) + 1 };
-    
-
-
-    // connect closest nodes
     for (const elem of distances) {
         const [n1, n2] = elem[0].split(",");
-        // check if edge would intersect
+
         const edge = { source: n1, target: n2 };
         const edgePositions = getEdgePositions(layout, edge);
-        
+
         // check if edge intersects with any other edge
         const intersects = Object.values(edges).some(e => {
             const ePos = getEdgePositions(layout, e);
             console.log(edge, e)
-            const test = intersectsLine(edgePositions, ePos);
-
-            console.log("intersects", test)
-            return test
-        });
-        
             
-        if (intersects)
-            continue;
+            // check if they both go to the same node
+            if(e.source == edge.source || e.source == edge.target || e.target == edge.source || e.target == edge.target) return false;
+
+            //const test = intersectsLine(edgePositions, ePos);
+            return intersectsLine(ePos, edgePositions);
+        });
+
+        if(intersects)
+            continue
 
 
         edges[`${n1}-${n2}`] = { source: n1, target: n2, label: Math.floor(Math.random() * maxCapacity) + 1 };

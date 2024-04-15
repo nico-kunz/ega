@@ -67,24 +67,28 @@ export function getNodePairs(nodes: string[]) {
 }
 
 /**
- * Checks if two edges intersect.
- * @param a The first edge.
- * @param b The second edge.
- * @returns True if the edges intersect, false otherwise.
+ * Checks if two line segments intersect. Algorithm from https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection#Given_two_points_on_each_line_segment, last access 16.04.2024
+ * @param line1 The first line segement.
+ * @param line2 The second line segment.
+ * @returns True if the lines intersect, false otherwise.
  */
-export function intersectsLine(a: EdgePositions, b: EdgePositions): boolean {
-    // check if they are the same edge
-    if (edgesEqual(a,b)) return false;
+export function intersectsLine(line1: EdgePositions, line2: EdgePositions) : boolean {
+    const t1 = (line1.x1 - line2.x1)*(line2.y1 - line2.y2) - (line1.y1 - line2.y1)*(line2.x1 - line2.x2);
+    const t2 = (line1.x1 - line1.x2) * (line2.y1 - line2.y2) - (line1.y1 - line1.y2)*(line2.x1 - line2.x2);
 
-    const p1 = {x: a.x1, y: a.y1};
-    const p2 = {x: a.x2, y: a.y2};
-    const p3 = {x: b.x1, y: b.y1};
-    const p4 = {x: b.x2, y: b.y2};
-    const ccw = (p1: Coordinate, p2: Coordinate, p3: Coordinate) => {
-        return (p3.y - p1.y) * (p2.x - p1.x) > (p2.y - p1.y) * (p3.x - p1.x);
-    }
+    const t = t1/t2;
+    if(t < 0 || t > 1) 
+        return false;
 
-    return ccw(p1,p3,p4) !== ccw(p2,p3,p4) && ccw(p1,p2,p3) !== ccw(p1,p2,p4);
+    const u1 = (line1.x1 - line1.x2) * (line1.y1 - line2.y1) - (line1.y1 - line1.y2) * (line1.x1 - line2.x1);
+    const u2 = (line1.x1 - line1.x2) * (line2.y1 - line2.y2) - (line1.y1 - line1.y2) * (line2.x1 - line2.x2)
+
+    const u = -1 * (u1/u2)
+
+    if(u < 0 || u > 1)
+        return false;
+
+    return true
 }
 
 /**
