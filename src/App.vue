@@ -3,6 +3,7 @@ import { Edges, Layouts, Nodes, defineConfigs } from 'v-network-graph';
 import { VNetworkGraph, VEdgeLabel } from 'v-network-graph';
 import { reactive } from 'vue';
 import { makeRandomMaxFlowGraph } from './utils/RandomMaxFlowGenerator';
+import { MaxFlowSolver } from './utils/MaxFlowSolver';
   
 const configs = reactive(
     defineConfigs({
@@ -11,15 +12,26 @@ const configs = reactive(
         autoPanAndZoomOnLoad: "center-zero"
     },
     edge: {
+        zOrder: {
+            zIndex: 100,
+        },
         label: {
-        background: {
-            color: '#FFFFFFFF',
-            padding: 1,
-            visible: true
-        }
+            background: {
+                color: '#FFFFFFFF',
+                padding: 2,
+                visible: true,
+            },
+        },
+        marker: {
+            target: {
+                type: 'arrow'
+            }
         }
     },
     node: {
+        zOrder: {
+            zIndex: 80,
+        },
         label: {
         color: "#FFF",
         direction: "center",
@@ -31,6 +43,9 @@ const configs = reactive(
 
             return node.name as string;
         }
+        },
+        normal: {
+            radius: 16,
         }
     }
     })
@@ -41,14 +56,11 @@ const nodes : Nodes = reactive({
 })
 
 const layout : Layouts = reactive({
-nodes: {
-
-},
+nodes: {},
 })
 
-
-const n = 20;
-const graph = makeRandomMaxFlowGraph(n, 20, {width: 800, height: 600});
+const n = 4;
+const graph = makeRandomMaxFlowGraph(n, 20, {width: 1200, height: 900});
 const layoutNodes = graph.layout.nodes;
 for (const node in layoutNodes) {
     nodes[node] = { name: node };
@@ -60,17 +72,20 @@ const edges : Edges = reactive({
 })
 
 function addNode() {
-    const newNode = `${Object.keys(nodes).length + 1}`;
-    nodes[newNode] = { name: newNode };
-    layout.nodes[newNode] = { x: -34.55937750784574, y: -10.346841686848222 };
-    edges[`edge${Object.keys(edges).length + 1}`] = { source: "1", target: newNode };
+    console.log(Object.keys(nodes)[0])
+    //nodes[Object.keys(nodes)[0]].name = "HALLO";
+    console.log(edges)
+    new MaxFlowSolver(edges, nodes, layout)
+    // const newNode = `${Object.keys(nodes).length + 1}`;
+    // nodes[newNode] = { name: newNode };
+    // layout.nodes[newNode] = { x: -34.55937750784574, y: -10.346841686848222 };
+    // edges[`edge${Object.keys(edges).length + 1}`] = { source: "1", target: newNode };
 }
 </script>
-
 <template>
   <v-network-graph class="graph" :nodes="nodes" :edges="edges" :layouts="layout" :configs="configs">
     <template #edge-label="{ edge, ...slotProps }">
-      <v-edge-label :text="edge.label" align="center" vertical-align="center" v-bind="slotProps" />
+      <v-edge-label :text="edge.flow + '/' + edge.label" align="center" vertical-align="center" v-bind="slotProps"/>
     </template>
   </v-network-graph>
   <button @click="layout.nodes.node1.y -= 10">Move node 1</button>
@@ -80,8 +95,8 @@ function addNode() {
 
 <style scoped>
 .graph {
-  width: 800px;
-  height: 600px;
+  width: 1200px;
+  height: 900px;
   border: 1px solid #000;
 }
 </style>
