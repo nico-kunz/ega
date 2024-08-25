@@ -38,7 +38,7 @@ function makeEdges(layout: Layouts, maxCapacity: number) {
         // check if edge intersects with any other edge
         const intersects = Object.values(edges).some(e => {
             const ePos = getEdgePositions(layout, e);
-            console.log(edge, e)
+            //console.log(edge, e)
             
             // check if they both connect the same node
             if(e.source == edge.source || e.source == edge.target || e.target == edge.source || e.target == edge.target) return false;
@@ -49,10 +49,14 @@ function makeEdges(layout: Layouts, maxCapacity: number) {
         if(intersects)
             continue
 
-
-        edges[`${n1}-${n2}`] = { source: n1, target: n2, label: Math.floor(Math.random() * maxCapacity) + 1 };
+        const numOfNodes = Object.keys(layout.nodes).length
+        console.log("LENGTH:" ,numOfNodes)
+        const containsStartOrEndNode = n1 == "1" || n1 == String(numOfNodes) || n2 == "1" || n2 == String(numOfNodes)
+        const capacity = (false) ? maxCapacity :  Math.floor(Math.random() * maxCapacity) + 1
+        edges[`${n1}-${n2}`] = { source: n1, target: n2, label: capacity, flow: 0 };
     }
 
+    console.log(edges)
     return edges;
 }
 
