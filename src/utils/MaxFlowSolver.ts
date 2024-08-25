@@ -33,6 +33,52 @@ function dfs(graph: FlowGraph, source: string, sink: string, flow = Infinity): n
     return 0;
 }
 
+function edmondsKarp(graph: FlowGraph, source: string, sink: string): number {
+    let maxFlow = 0
+    while (true) {
+        let flow = bfs(graph, source, sink)
+        if (flow === 0) {
+            break
+        }
+        maxFlow += flow
+    }
+    return maxFlow
+}
+
+function bfs(graph: FlowGraph, source: string, sink: string, flow = Infinity) {
+    let Q = [source]
+    let visited :{[key: string]: boolean}= {}
+    visited[source] = true
+
+    let prev :{[key: string]: FlowEdge}= {}
+    while (Q.length > 0) {
+        let node = Q.shift()
+        if (node === sink) {
+            break;
+        }
+
+        for (const edge of graph.nodes[node!].edeges as FlowEdge[]) {
+            if (edge.residual > 0 && visited[edge.target] !== true) {
+                visited[edge.target] = true
+                prev[edge.target] = edge
+                Q.push(edge.target)
+            }
+        }
+    }
+
+    // If we reached the sink, find the bottleneck
+    let bottleneck = Infinity
+    for(let node = sink; prev[node]; node = prev[node].source) {
+        bottleneck = Math.min(bottleneck, prev[node].residual)
+    }
+
+    // Update flow values and return bottleneck
+    for(let node = sink; prev[node]; node = prev[node].source) {
+        prev[node].augment(bottleneck)
+    }
+
+    return bottleneck
+}
 
 class FlowEdge {
     source: string
@@ -73,7 +119,7 @@ class FlowGraph {
 
         this.edges = edges
         this.nodes["4"].name = "TEST"
-        console.log(fordFulkerson(this, "1", "4"))
+        console.log(fordFulkerson(this, "1", String(Object.keys(nodes).length)))
     }
 }
 
