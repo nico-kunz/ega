@@ -37,7 +37,8 @@ function edmondsKarp(graph: FlowGraph, source: string, sink: string): number {
     let maxFlow = 0
     while (true) {
         let flow = bfs(graph, source, sink)
-        if (flow === 0) {
+        console.log("flow: ", flow)
+        if (flow === Infinity) {
             break
         }
         maxFlow += flow
@@ -45,19 +46,19 @@ function edmondsKarp(graph: FlowGraph, source: string, sink: string): number {
     return maxFlow
 }
 
-function bfs(graph: FlowGraph, source: string, sink: string, flow = Infinity) {
+function bfs(graph: FlowGraph, source: string, sink: string): number {
     let Q = [source]
-    let visited :{[key: string]: boolean}= {}
+    let visited :{[key: string]: boolean} = {}
     visited[source] = true
 
-    let prev :{[key: string]: FlowEdge}= {}
+    let prev :{[key: string]: FlowEdge} = {}
     while (Q.length > 0) {
-        let node = Q.shift()
+        let node: string = Q.shift()!
         if (node === sink) {
             break;
         }
 
-        for (const edge of graph.nodes[node!].edeges as FlowEdge[]) {
+        for (const edge of graph.nodes[node].edges as FlowEdge[]) {
             if (edge.residual > 0 && visited[edge.target] !== true) {
                 visited[edge.target] = true
                 prev[edge.target] = edge
@@ -69,11 +70,13 @@ function bfs(graph: FlowGraph, source: string, sink: string, flow = Infinity) {
     // If we reached the sink, find the bottleneck
     let bottleneck = Infinity
     for(let node = sink; prev[node]; node = prev[node].source) {
+        console.log("Prev node residual", prev[node].residual)
         bottleneck = Math.min(bottleneck, prev[node].residual)
     }
 
     // Update flow values and return bottleneck
     for(let node = sink; prev[node]; node = prev[node].source) {
+        console.log("Prev node residual", prev[node].residual)
         prev[node].augment(bottleneck)
     }
 
@@ -119,7 +122,7 @@ class FlowGraph {
 
         this.edges = edges
         this.nodes["4"].name = "TEST"
-        console.log(fordFulkerson(this, "1", String(Object.keys(nodes).length)))
+        console.log(edmondsKarp(this, "1", String(Object.keys(nodes).length)))
     }
 }
 
