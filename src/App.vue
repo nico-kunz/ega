@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Edges, Layouts, Nodes, defineConfigs } from 'v-network-graph';
+import { EdgeLabelArea, Edges, Layouts, Nodes, defineConfigs } from 'v-network-graph';
 import { VNetworkGraph, VEdgeLabel } from 'v-network-graph';
 import { reactive } from 'vue';
 import { makeRandomMaxFlowGraph } from './utils/RandomMaxFlowGenerator';
@@ -12,12 +12,11 @@ const configs = reactive(
         autoPanAndZoomOnLoad: "center-zero"
     },
     edge: {
-        zOrder: {
-            zIndex: 100,
-        },
+        type: 'curve',
+        gap: 10,
         label: {
             background: {
-                color: '#FFFFFFFF',
+                color: '#FFFFFF00',
                 padding: 2,
                 visible: true,
             },
@@ -59,7 +58,7 @@ const layout : Layouts = reactive({
 nodes: {},
 })
 
-const n = 4;
+const n = 5;
 const graph = makeRandomMaxFlowGraph(n, 20, {width: 1200, height: 900});
 const layoutNodes = graph.layout.nodes;
 for (const node in layoutNodes) {
@@ -70,6 +69,8 @@ for (const node in layoutNodes) {
 const edges : Edges = reactive({
     ...graph.edges
 })
+
+
 
 function addNode() {
     console.log(Object.keys(nodes)[0])
@@ -85,7 +86,7 @@ function addNode() {
 <template>
   <v-network-graph class="graph" :nodes="nodes" :edges="edges" :layouts="layout" :configs="configs">
     <template #edge-label="{ edge, ...slotProps }">
-      <v-edge-label :text="edge.flow + '/' + edge.label" align="center" vertical-align="center" v-bind="slotProps"/>
+      <v-edge-label :text="edge.flow + '/' + edge.label" align="center" vertical-align="above" v-bind="slotProps" />
     </template>
   </v-network-graph>
   <button @click="layout.nodes.node1.y -= 10">Move node 1</button>
