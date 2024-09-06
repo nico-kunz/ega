@@ -12,15 +12,16 @@ function fordFulkerson(graph: FlowGraph, source: string, sink: string): number {
     return maxFlow
 }
 
-function dfs(graph: FlowGraph, source: string, sink: string, flow = Infinity): number {
+
+function dfs(graph: FlowGraph, source: string, sink: string, visited: {[key: string]: boolean} = {}, flow = Infinity): number {
     if (source === sink) {
         return flow
     }
-    let visited :{[key: string]: boolean}= {}
-
+    
+    visited[source] = true
     for(const edge of graph.nodes[source].edges as FlowEdge[]) {
         if(edge.residual > 0 && visited[edge.target] !== true) {
-            const bottleneck = dfs(graph, edge.target, sink, Math.min(flow, edge.residual))
+            const bottleneck = dfs(graph, edge.target, sink, visited, Math.min(flow, edge.residual))
 
             // If we found a path, augment the flow to (partly) "block" the path
             if (bottleneck > 0) {
@@ -83,6 +84,10 @@ function bfs(graph: FlowGraph, source: string, sink: string): number {
     return bottleneck
 }
 
+function dinic(graph: FlowGraph, source: string, sink: string): number {
+    return 0
+}
+
 class FlowEdge {
     source: string
     target: string
@@ -122,7 +127,7 @@ class FlowGraph {
 
         this.edges = edges
         this.nodes["4"].name = "TEST"
-        console.log(edmondsKarp(this, "1", String(Object.keys(nodes).length)))
+        console.log(fordFulkerson(this, "1", String(Object.keys(nodes).length)))
     }
 }
 
