@@ -17,6 +17,15 @@ export function makeRandomMaxFlowGraph(numberOfNodes: number, maxCapacity: numbe
 
     const edges = makeEdges(layout, maxCapacity);
 
+    //Generate all back-edges 
+    for (const edge of Object.values(edges)) {
+        const { source, target } = edge;
+        const containsStartOrEndNode = source == "1" || source == String(numberOfNodes) || target == "1" || target == String(numberOfNodes)
+        const capacity = (false) ? maxCapacity :  Math.floor(Math.random() * maxCapacity) + 1
+        const backEdge = { source: target, target: source, label: maxCapacity, flow: 0 };
+        edges[`${target}-${source}`] = backEdge
+    }
+
     return {
         nodes: nodes,
         layout: layout,
