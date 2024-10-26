@@ -85,8 +85,71 @@ function bfs(graph: FlowGraph, source: string, sink: string): number {
 }
 
 function dinic(graph: FlowGraph, source: string, sink: string): number {
-    return 0
+    let maxFlow = 0;
+    let level: { [key: string]: number } | null;
+
+    // Build Level Grap
+    while ((level = bfsLevelGraph(graph, source, sink))) { 
+        let flow;
+
+        // find blocking flows
+        while ((flow = dfsBlockingFlow(graph, source, sink, level, Infinity)) > 0) {
+            maxFlow += flow;
+        }
+    }
+
+    return maxFlow;
 }
+
+function bfsLevelGraph(graph: FlowGraph, source: string, sink: string): { [key: string]: number } | null {
+    const level: { [key: string]: number } = {};
+    const queue: string[] = [source];
+    level[source] = 0;
+
+    while (queue.length > 0) {
+        const node = queue.shift()!;
+        for (const edge of graph.nodes[node].edges as FlowEdge[]) {
+            // Only consider edges with residual capacity
+            if (edge.residual > 0 && level[edge.target] === undefined) {
+                level[edge.target] = level[node] + 1;
+                queue.push(edge.target);
+            }
+        }
+    }
+
+    // Check if sink is reachable in level graph
+    return level[sink] !== undefined ? level : null;
+}
+
+function dfsBlockingFlow(
+    graph: FlowGraph,
+    node: string,
+    sink: string,
+    level: { [key: string]: number },
+    flow: number
+): number {
+    if (node === sink) return flow;
+
+    for (const edge of graph.nodes[node].edges as FlowEdge[]) {
+        if (edge.residual > 0 && level[edge.target] === level[node] + 1) {
+            const bottleneck = dfsBlockingFlow(
+                graph,
+                edge.target,
+                sink,
+                level,
+                Math.min(flow, edge.residual)
+            );
+
+            if (bottleneck > 0) {
+                edge.augment(bottleneck);
+                return bottleneck;
+            }
+        }
+    }
+
+    return 0;
+}
+
 
 class FlowEdge {
     source: string
@@ -126,8 +189,8 @@ class FlowGraph {
         }
 
         this.edges = edges
-        this.nodes["4"].name = "TEST"
-        console.log(fordFulkerson(this, "1", String(Object.keys(nodes).length)))
+        //this.nodes["4"].name = "TEST"
+        console.log(dinic(this, "1", String(Object.keys(nodes).length)))
     }
 }
 
