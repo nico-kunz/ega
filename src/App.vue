@@ -13,7 +13,7 @@ const configs = reactive(
     },
     edge: {
         type: 'curve',
-        gap: 10,
+        gap: 20,
         label: {
             background: {
                 color: '#FFFFFF00',
