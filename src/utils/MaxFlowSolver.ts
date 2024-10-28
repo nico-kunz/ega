@@ -170,6 +170,69 @@ function bfsLevelGraph(graph: FlowGraph, source: string, sink: string): { [key: 
     return level[sink] !== undefined ? level : null;
 }
 
+function dinicMatrix(graph: MatrixGraph, source: number, sink: number): number {
+    let maxFlow = 0;
+    let level;
+
+    while ((level = bfsLevelGraphMatrix(graph, source, sink))) {
+        let flow;
+        while ((flow = dfsBlockingFlowMatrix(graph, source, sink, level, Infinity)) > 0) {
+            maxFlow += flow;
+        }
+    }
+
+    return maxFlow;
+}
+
+function bfsLevelGraphMatrix(graph: MatrixGraph, source: number, sink: number): number[] | null {
+    const level: number[] = Array(graph.n).fill(-1);
+    const queue: number[] = [source];
+    level[source] = 0;
+
+    while (queue.length > 0) {
+        const u = queue.shift()!;
+        for (let v = 0; v < graph.n; v++) {
+            if (graph.capacity[u][v] - graph.flow[u][v] > 0 && level[v] === -1) {
+                level[v] = level[u] + 1;
+                queue.push(v);
+            }
+        }
+    }
+
+    return level[sink] === -1 ? null : level;
+}
+
+function dfsBlockingFlowMatrix(
+    graph: MatrixGraph,
+    u: number,
+    sink: number,
+    level: number[],
+    flow: number
+): number {
+    if (u === sink) return flow;
+
+    for (let v = 0; v < graph.n; v++) {
+        if (graph.capacity[u][v] - graph.flow[u][v] > 0 && level[v] === level[u] + 1) {
+            const bottleneck = dfsBlockingFlowMatrix(
+                graph,
+                v,
+                sink,
+                level,
+                Math.min(flow, graph.capacity[u][v] - graph.flow[u][v])
+            );
+
+            if (bottleneck > 0) {
+                graph.flow[u][v] += bottleneck;
+                graph.flow[v][u] -= bottleneck;
+                return bottleneck;
+            }
+        }
+    }
+
+    return 0;
+}
+
+
 function dfsBlockingFlow(
     graph: FlowGraph,
     node: string,
