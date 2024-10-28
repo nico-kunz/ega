@@ -1,4 +1,5 @@
 import { Edges, Layouts, Nodes } from "v-network-graph";
+import { MatrixGraph } from "./MatrixGraph";
 
 function fordFulkerson(graph: FlowGraph, source: string, sink: string): number {
     let maxFlow = 0
@@ -45,6 +46,54 @@ function edmondsKarp(graph: FlowGraph, source: string, sink: string): number {
         maxFlow += flow
     }
     return maxFlow
+}
+
+function edmondsKarpMatrix(graph: MatrixGraph, source: number, sink: number): number {
+    let maxFlow = 0
+    while (true) {
+        let flow = bfsMatrix(graph, source, sink)
+        if(flow === Infinity) {
+            break
+        }
+        maxFlow += flow
+    }
+    return maxFlow
+}
+
+function bfsMatrix(graph: MatrixGraph, source: number, sink: number): number {
+    let Q = [source]
+    let visited :{[key: string]: boolean} = {}
+    visited[source] = true
+
+    let prev :{[key: string]: FlowEdge} = {}
+    while (Q.length > 0) {
+        let node: number = Q.shift()!
+        if (node === sink) {
+            break;
+        }
+
+        for (let i = 0; i < graph.n; i++) {
+            if (graph.capacity[node][i] - graph.flow[node][i] > 0 && visited[i] !== true) {
+                visited[i] = true
+                prev[i] = new FlowEdge(String(node), String(i), graph.capacity[node][i], graph.flow[node][i])
+                Q.push(i)
+            }
+        }
+    }
+
+    // If we reached the sink, find the bottleneck
+    let bottleneck = Infinity
+    for(let node = sink; prev[node]; node = parseInt(prev[node].source)) {
+        bottleneck = Math.min(bottleneck, graph.capacity[parseInt(prev[node].source)][node] - graph.flow[parseInt(prev[node].source)][node])
+    }
+
+    // Update flow values and return bottleneck
+    for(let node = sink; prev[node]; node = parseInt(prev[node].source)) {
+        graph.flow[parseInt(prev[node].source)][node] += bottleneck
+        graph.flow[node][parseInt(prev[node].source)] -= bottleneck
+    }
+
+    return bottleneck
 }
 
 function bfs(graph: FlowGraph, source: string, sink: string): number {
