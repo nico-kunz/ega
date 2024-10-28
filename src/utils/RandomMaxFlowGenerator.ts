@@ -33,6 +33,42 @@ export function makeRandomMaxFlowGraph(numberOfNodes: number, maxCapacity: numbe
     }
 }
 
+export function makeMaxFlowGraph(matrix: number[][]) {
+    const nodes: Nodes = {};
+    const layout: Layouts = { nodes: {} };
+    const coords = getRandomNodes(matrix.length, {width: 1000, height: 1000}, 16);
+    for (let i = 0; i < coords.length; i++) {
+        const newNode = `${i + 1}`;
+        nodes[newNode] = { name: newNode };
+        layout.nodes[newNode] = { x: coords[i].x, y: coords[i].y };
+    }
+
+    const edges = makeEdgesFromMatrix(layout, matrix);
+
+    return {
+        nodes: nodes,
+        layout: layout,
+        edges: edges
+    }
+}
+
+function makeEdgesFromMatrix(layout: Layouts, matrix: number[][]) {
+    const edges: Edges = {};
+
+    for (let i = 0; i < matrix.length; i++) {
+        for (let j = 0; j < matrix[i].length; j++) {
+            if(matrix[i][j] > 0) {
+                const n1 = i + 1
+                const n2 = j + 1
+                const edge = { source: String(n1), target: String(n2), label: matrix[i][j], flow: 0 };
+                edges[`${n1}-${n2}`] = edge
+            }
+        }
+    }
+
+    return edges;
+}
+
 function makeEdges(layout: Layouts, maxCapacity: number) {
     const distances = getDistancesSorted(layout);
     const edges: Edges = {};
