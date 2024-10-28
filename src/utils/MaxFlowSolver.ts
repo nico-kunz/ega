@@ -1,4 +1,4 @@
-import { Edges, Layouts, Nodes } from "v-network-graph";
+import { Edges, Nodes } from "v-network-graph";
 import { MatrixGraph } from "./MatrixGraph";
 
 function fordFulkersonMatrix(graph: MatrixGraph, source: number, sink: number) {
@@ -54,7 +54,7 @@ function bfsMatrix(graph: MatrixGraph, source: number, sink: number): number {
     let visited :{[key: string]: boolean} = {}
     visited[source] = true
 
-    let prev :{[key: string]: FlowEdge} = {}
+    let prev :{[key: string]: number} = {}
     while (Q.length > 0) {
         let node: number = Q.shift()!
         if (node === sink) {
@@ -64,7 +64,7 @@ function bfsMatrix(graph: MatrixGraph, source: number, sink: number): number {
         for (let i = 0; i < graph.n; i++) {
             if (graph.capacity[node][i] - graph.flow[node][i] > 0 && visited[i] !== true) {
                 visited[i] = true
-                prev[i] = new FlowEdge(String(node), String(i), graph.capacity[node][i], graph.flow[node][i])
+                prev[i] = node
                 Q.push(i)
             }
         }
@@ -72,14 +72,14 @@ function bfsMatrix(graph: MatrixGraph, source: number, sink: number): number {
 
     // If we reached the sink, find the bottleneck
     let bottleneck = Infinity
-    for(let node = sink; prev[node]; node = parseInt(prev[node].source)) {
-        bottleneck = Math.min(bottleneck, graph.capacity[parseInt(prev[node].source)][node] - graph.flow[parseInt(prev[node].source)][node])
+    for(let node = sink; prev[node]; node = prev[node]) {
+        bottleneck = Math.min(bottleneck, graph.capacity[prev[node]][node] - graph.flow[prev[node]][node])
     }
 
     // Update flow values and return bottleneck
-    for(let node = sink; prev[node]; node = parseInt(prev[node].source)) {
-        graph.flow[parseInt(prev[node].source)][node] += bottleneck
-        graph.flow[node][parseInt(prev[node].source)] -= bottleneck
+    for(let node = sink; prev[node]; node = prev[node]) {
+        graph.flow[prev[node]][node] += bottleneck
+        graph.flow[node][prev[node]] -= bottleneck
     }
 
     return bottleneck
@@ -145,27 +145,6 @@ function dfsBlockingFlowMatrix(
     }
 
     return 0;
-}
-
-class FlowEdge {
-    source: string
-    target: string
-    capacity: number
-    flow: number
-    residual: number
-
-    constructor(source: string, target: string, capacity: number, flow: number) {
-        this.source = source
-        this.target = target
-        this.capacity = capacity
-        this.residual = capacity
-        this.flow = flow
-    }
-
-    augment(flow: number) {
-        this.flow += flow
-        this.residual -= flow
-    }
 }
 
 function pushRelabel(graph: MatrixGraph, source: number, sink: number): number {
@@ -239,12 +218,24 @@ function discharge(graph: MatrixGraph, u: number) {
 }
 
 export class MaxFlowSolver {
-    constructor(edgesRef: Edges, nodesRef: Nodes, layoutRef: Layouts) {
+    constructor(edgesRef: Edges, nodesRef: Nodes, algo = 0) {
         //nodesRef[Object.keys(nodesRef)[0]].name = "TEST"
-        let flowgraph = new FlowGraph(edgesRef, nodesRef)
-    }
-    static test(edges: Edges, nodes: Nodes) {
-        nodes[3].name = "Test"
-        console.log(nodes[3].name)
+        console.log("MaxFlowSolver", algo)
+        let graph = new MatrixGraph(nodesRef, edgesRef)
+
+        switch(algo) {
+            case 0:
+                console.log(fordFulkersonMatrix(graph, 0, Object.keys(nodesRef).length - 1))
+                break
+            case 1:
+                console.log(edmondsKarpMatrix(graph, 0, Object.keys(nodesRef).length - 1))
+                break
+            case 2:
+                console.log(dinicMatrix(graph, 0, Object.keys(nodesRef).length - 1))
+                break
+            case 3:
+                console.log(pushRelabel(graph, 0, Object.keys(nodesRef).length - 1))
+                break;
+        }
     }
 }
