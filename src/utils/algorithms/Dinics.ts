@@ -1,17 +1,23 @@
 import { MatrixGraph } from "../MatrixGraph";
 
-export function dinics(graph: MatrixGraph, source: number, sink: number): number {
+export function dinics(graph: MatrixGraph, source: number, sink: number, update: Function, waitForNextStep: Function): Promise<number> {
     let maxFlow = 0;
     let level;
 
-    while ((level = bfsLevelGraph(graph, source, sink))) {
-        let flow;
-        while ((flow = dfsBlockingFlow(graph, source, sink, level, Infinity)) > 0) {
-            maxFlow += flow;
+    return new Promise(async (resolve) => {     
+        let x = 0   
+        while ((level = bfsLevelGraph(graph, source, sink))) {
+            console.log("STEP", x)
+            x++
+            let flow;
+            while ((flow = dfsBlockingFlow(graph, source, sink, level, Infinity, update)) > 0) {
+                maxFlow += flow;
+                await waitForNextStep()
+            }
         }
-    }
-
-    return maxFlow;
+    
+        resolve(maxFlow);
+    });
 }
 
 function bfsLevelGraph(graph: MatrixGraph, source: number, sink: number): number[] | null {
@@ -37,7 +43,8 @@ function dfsBlockingFlow(
     u: number,
     sink: number,
     level: number[],
-    flow: number
+    flow: number,
+    update: Function
 ): number {
     if (u === sink) return flow;
 
@@ -48,12 +55,15 @@ function dfsBlockingFlow(
                 v,
                 sink,
                 level,
-                Math.min(flow, graph.capacity[u][v] - graph.flow[u][v])
+                Math.min(flow, graph.capacity[u][v] - graph.flow[u][v]),
+                update
             );
 
             if (bottleneck > 0) {
                 graph.flow[u][v] += bottleneck;
                 graph.flow[v][u] -= bottleneck;
+                update(u, v, graph.flow[u][v], graph.capacity[u][v]);
+                update(v, u, graph.flow[v][u], graph.capacity[v][u]);
                 return bottleneck;
             }
         }
