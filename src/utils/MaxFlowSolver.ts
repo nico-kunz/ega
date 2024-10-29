@@ -34,10 +34,10 @@ export class MaxFlowSolver {
                 edmondsKarp(graph, 0, Object.keys(nodesRef).length - 1, this.updateEdge.bind(this), waitForNextStep).then(console.log)
                 break
             case 2:
-                console.log(dinics(graph, 0, Object.keys(nodesRef).length - 1))
+                dinics(graph, 0, Object.keys(nodesRef).length - 1, this.updateEdge.bind(this), waitForNextStep).then(console.log)
                 break
             case 3:
-                console.log(pushRelabel(graph, 0, Object.keys(nodesRef).length - 1))
+                pushRelabel(graph, 0, Object.keys(nodesRef).length - 1, this.updateEdge.bind(this), waitForNextStep).then(console.log)
                 break;
         }
     }
