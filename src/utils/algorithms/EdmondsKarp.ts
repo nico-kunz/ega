@@ -35,12 +35,12 @@ function bfs(graph: MatrixGraph, source: number, sink: number): number {
 
     // If we reached the sink, find the bottleneck
     let bottleneck = Infinity
-    for(let node = sink; prev[node]; node = prev[node]) {
+    for(let node = sink; prev[node] != undefined; node = prev[node]) {
         bottleneck = Math.min(bottleneck, graph.capacity[prev[node]][node] - graph.flow[prev[node]][node])
     }
 
     // Update flow values and return bottleneck
-    for(let node = sink; prev[node]; node = prev[node]) {
+    for(let node = sink; prev[node] != undefined; node = prev[node]) {
         graph.flow[prev[node]][node] += bottleneck
         graph.flow[node][prev[node]] -= bottleneck
     }
