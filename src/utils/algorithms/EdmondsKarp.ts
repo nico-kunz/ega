@@ -1,18 +1,26 @@
 import { MatrixGraph } from "../MatrixGraph"
 
-export function edmondsKarp(graph: MatrixGraph, source: number, sink: number): number {
+export function edmondsKarp(graph: MatrixGraph, source: number, sink: number, update: Function, waitForNextStep: Function): Promise<number> {
     let maxFlow = 0
-    while (true) {
-        let flow = bfs(graph, source, sink)
-        if(flow === Infinity) {
-            break
+
+    return new Promise(async (resolve) => {
+        let x = 0
+        while (true) {
+            console.log("STEP", x)
+            x++
+            let flow = bfs(graph, source, sink, update)
+            if(flow === Infinity) {
+                break
+            }
+            maxFlow += flow
+            await waitForNextStep()
         }
-        maxFlow += flow
-    }
-    return maxFlow
+        
+        resolve(maxFlow)
+    })
 }
 
-function bfs(graph: MatrixGraph, source: number, sink: number): number {
+function bfs(graph: MatrixGraph, source: number, sink: number, update: Function): number {
     let Q = [source]
     let visited :{[key: string]: boolean} = {}
     visited[source] = true
@@ -43,6 +51,8 @@ function bfs(graph: MatrixGraph, source: number, sink: number): number {
     for(let node = sink; prev[node] != undefined; node = prev[node]) {
         graph.flow[prev[node]][node] += bottleneck
         graph.flow[node][prev[node]] -= bottleneck
+        update(prev[node], node, graph.flow[prev[node]][node], graph.capacity[prev[node]][node])
+        update(node, prev[node], graph.flow[node][prev[node]], graph.capacity[node][prev[node]])
     }
 
     return bottleneck
