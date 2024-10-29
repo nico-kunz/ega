@@ -12,6 +12,9 @@ const configs = reactive(
         autoPanAndZoomOnLoad: "center-zero"
     },
     edge: {
+        normal: {
+            color: "#000A",
+        },
         type: 'curve',
         gap: 20,
         label: {
@@ -45,6 +48,7 @@ const configs = reactive(
         },
         normal: {
             radius: 16,
+            color: "#000",
         }
     }
     })
@@ -52,7 +56,7 @@ const configs = reactive(
 
 const nodes : Nodes = reactive({})
 const layout : Layouts = reactive({nodes: {},})
-const n = 3;
+const n = 15;
 const graph = makeRandomMaxFlowGraph(n, 50, {width: 1200, height: 900});
 
 const layoutNodes = graph.layout.nodes;
