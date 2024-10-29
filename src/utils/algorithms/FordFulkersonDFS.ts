@@ -1,6 +1,6 @@
 import { MatrixGraph } from "../MatrixGraph";
 
-export function fordFulkerson(graph: MatrixGraph, source: number, sink: number, update: Function, waitForNextStep: Function): Promise<number> {
+export function fordFulkerson(graph: MatrixGraph, source: number, sink: number, update: Function, waitForNextStep: Function, flush: Function): Promise<number> {
     const residual = graph.capacity.map(row => row.slice())
     let maxFlow = 0
 
@@ -25,6 +25,8 @@ export function fordFulkerson(graph: MatrixGraph, source: number, sink: number, 
                 }
             }
         }
+
+        flush()
 
         return 0
     }

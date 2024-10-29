@@ -28,7 +28,7 @@ export class MaxFlowSolver {
 
         switch(algo) {
             case 0:
-                fordFulkerson(graph, 0, Object.keys(nodesRef).length - 1, this.updateEdge.bind(this), waitForNextStep).then(console.log)
+                fordFulkerson(graph, 0, Object.keys(nodesRef).length - 1, this.updateEdge.bind(this), waitForNextStep, this.flushEdges.bind(this)).then(console.log)
                 break
             case 1:
                 edmondsKarp(graph, 0, Object.keys(nodesRef).length - 1, this.updateEdge.bind(this), waitForNextStep).then(console.log)
@@ -54,11 +54,20 @@ export class MaxFlowSolver {
         }
     }
 
+    flushEdges() {
+        for(const key in this.edges) {
+            if(this.edges[key].color == "blue") {
+                this.edges[key].color = "red"
+            }
+        }
+    }
+
     updateEdge(u: number, v: number, flow: number, capacity: number) {
         const edge = this.edges[`${u+1}-${v+1}`]
         if(edge) {
             edge.flow = flow
             edge.label = capacity
+            edge.color = "blue"
         }
     }
 }
