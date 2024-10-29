@@ -28,10 +28,10 @@ export class MaxFlowSolver {
 
         switch(algo) {
             case 0:
-                console.log(fordFulkerson(graph, 0, Object.keys(nodesRef).length - 1, this.updateEdge.bind(this), waitForNextStep))
+                fordFulkerson(graph, 0, Object.keys(nodesRef).length - 1, this.updateEdge.bind(this), waitForNextStep).then(console.log)
                 break
             case 1:
-                console.log(edmondsKarp(graph, 0, Object.keys(nodesRef).length - 1))
+                edmondsKarp(graph, 0, Object.keys(nodesRef).length - 1, this.updateEdge.bind(this), waitForNextStep).then(console.log)
                 break
             case 2:
                 console.log(dinics(graph, 0, Object.keys(nodesRef).length - 1))
