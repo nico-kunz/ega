@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { EdgeLabelArea, Edges, Layouts, Nodes, defineConfigs } from 'v-network-graph';
+import { Edges, Layouts, Nodes, defineConfigs } from 'v-network-graph';
 import { VNetworkGraph, VEdgeLabel } from 'v-network-graph';
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
 import { makeRandomMaxFlowGraph } from './utils/RandomMaxFlowGenerator';
 import { MaxFlowSolver } from './utils/MaxFlowSolver';
   
@@ -50,49 +50,75 @@ const configs = reactive(
     })
 )
 
-const nodes : Nodes = reactive({
+const nodes : Nodes = reactive({})
+const layout : Layouts = reactive({nodes: {},})
+const n = 3;
+const graph = makeRandomMaxFlowGraph(n, 50, {width: 1200, height: 900});
 
-})
-
-const layout : Layouts = reactive({
-nodes: {},
-})
-
-const n = 5;
-const graph = makeRandomMaxFlowGraph(n, 20, {width: 1200, height: 900});
 const layoutNodes = graph.layout.nodes;
 for (const node in layoutNodes) {
     nodes[node] = { name: node };
     layout.nodes[node] = { x: layoutNodes[node].x, y: layoutNodes[node].y };
 }
 
-const edges : Edges = reactive({
-    ...graph.edges
-})
+const edges : Edges = reactive({...graph.edges})
 
+const solver = ref<MaxFlowSolver | null>(null);
+const isRunning = ref(false);
 
-
-function addNode() {
-    console.log(Object.keys(nodes)[0])
-    //nodes[Object.keys(nodes)[0]].name = "HALLO";
-    console.log(edges)
-    new MaxFlowSolver(edges, nodes, layout)
-    // const newNode = `${Object.keys(nodes).length + 1}`;
-    // nodes[newNode] = { name: newNode };
-    // layout.nodes[newNode] = { x: -34.55937750784574, y: -10.346841686848222 };
-    // edges[`edge${Object.keys(edges).length + 1}`] = { source: "1", target: newNode };
+// Emit event for the next step
+function emitNextStep() {
+  const event = new CustomEvent("next-step");
+  document.dispatchEvent(event);
 }
+
+const initialNodes = JSON.parse(JSON.stringify(nodes));
+const initialEdges = JSON.parse(JSON.stringify(edges));
+const initialLayout = JSON.parse(JSON.stringify(layout));
+
+// Reset the graph and solver
+function reset() {
+    Object.keys(nodes).forEach(key => delete nodes[key]);
+    Object.keys(edges).forEach(key => delete edges[key]);
+    Object.keys(layout.nodes).forEach(key => delete layout.nodes[key]);
+
+    Object.assign(nodes, JSON.parse(JSON.stringify(initialNodes)));
+    Object.assign(edges, JSON.parse(JSON.stringify(initialEdges)));
+    Object.assign(layout.nodes, JSON.parse(JSON.stringify(initialLayout.nodes)));
+    solver.value = null;
+    isRunning.value = false;
+}
+
+// Start the algorithm
+function startAlgorithm(algo: number) {
+  if (!isRunning.value) {
+    isRunning.value = true;
+    solver.value = new MaxFlowSolver(edges, nodes, algo);
+  }
+}
+
 </script>
 <template>
-  <v-network-graph class="graph" :nodes="nodes" :edges="edges" :layouts="layout" :configs="configs">
-    <template #edge-label="{ edge, ...slotProps }">
-      <v-edge-label :text="edge.flow + '/' + edge.label" align="center" vertical-align="above" v-bind="slotProps" />
-    </template>
-  </v-network-graph>
-  <button @click="layout.nodes.node1.y -= 10">Move node 1</button>
-  <button @click="nodes.node1.name = 'Node 1 changed'">Change node 1 name</button>
-  <button @click="addNode">Add node</button>
-</template>
+    <v-network-graph class="graph" :nodes="nodes" :edges="edges" :layouts="layout" :configs="configs">
+      <template #edge-label="{ edge, ...slotProps }">
+        <v-edge-label :text="edge.flow + '/' + edge.label" align="center" vertical-align="above" v-bind="slotProps" />
+      </template>
+    </v-network-graph>
+  
+    <button @click="reset">Reset</button>
+    <button @click="startAlgorithm(0)">Start Ford Fulkerson</button>
+    <button @click="emitNextStep">Next</button>
+  
+    <div style="display: flex; justify-content: center; margin-top: 2em;">
+      <div style="display: flex; flex-direction: column; max-width: fit-content;">
+        <button @click="startAlgorithm(0)">Ford Fulkerson</button>
+        <button @click="startAlgorithm(1)">Edmonds Karp</button>
+        <button @click="startAlgorithm(2)">Dinics</button>
+        <button @click="startAlgorithm(3)">Push Relabel</button>
+      </div>
+    </div>
+  </template>
+  
 
 <style scoped>
 .graph {
