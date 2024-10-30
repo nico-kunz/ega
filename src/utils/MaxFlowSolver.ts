@@ -31,7 +31,7 @@ export class MaxFlowSolver {
                 fordFulkerson(graph, 0, Object.keys(nodesRef).length - 1, this.updateEdge.bind(this), waitForNextStep, this.flushEdges.bind(this)).then(console.log)
                 break
             case 1:
-                edmondsKarp(graph, 0, Object.keys(nodesRef).length - 1, this.updateEdge.bind(this), waitForNextStep).then(console.log)
+                edmondsKarp(graph, 0, Object.keys(nodesRef).length - 1, this.updateEdge.bind(this), waitForNextStep, this.flushEdges.bind(this)).then(console.log)
                 break
             case 2:
                 dinics(graph, 0, Object.keys(nodesRef).length - 1, this.updateEdge.bind(this), waitForNextStep).then(console.log)

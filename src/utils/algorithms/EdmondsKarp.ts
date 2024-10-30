@@ -1,6 +1,6 @@
 import { MatrixGraph } from "../MatrixGraph"
 
-export function edmondsKarp(graph: MatrixGraph, source: number, sink: number, update: Function, waitForNextStep: Function): Promise<number> {
+export function edmondsKarp(graph: MatrixGraph, source: number, sink: number, update: Function, waitForNextStep: Function, flush: Function): Promise<number> {
     let maxFlow = 0
 
     return new Promise(async (resolve) => {
@@ -14,6 +14,7 @@ export function edmondsKarp(graph: MatrixGraph, source: number, sink: number, up
             }
             maxFlow += flow
             await waitForNextStep()
+            flush()
         }
         
         resolve(maxFlow)
